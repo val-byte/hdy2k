@@ -6,7 +6,7 @@ name: hdy2k
 description: This is my personal OS image.
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/silverblue-main
+base-image: docker pull ghcr.io/ublue-os/mate:latest
 image-version: 42 # latest is also supported if you want new updates ASAP
 
 # module configuration, executed in order
@@ -19,12 +19,24 @@ modules:
 
   - type: dnf
     repos:
+      files:
+        - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
+        - https://copr.fedorainfracloud.org/coprs/hazel-bunny/ricing/repo/fedora-42/hazel-bunny-ricing-fedora-42.repo
       copr:
         - atim/starship
     install:
       packages:
         - micro
         - starship
+        - alacritty
+        - kora-icon-theme
+        - https://kojipkgs.fedoraproject.org//packages/libXScrnSaver/1.2.4/5.fc42/x86_64/libXScrnSaver-1.2.4-5.fc42.x86_64.rpm
+        - fastfetch
+        - adwaita-fonts-all
+        - docker
+        - docker-compose
+        - tailscale
+        - ddcutil
     remove:
       packages:
         # example: removing firefox (in favor of the flatpak)
@@ -36,10 +48,20 @@ modules:
     configurations:
       - notify: true # Send notification after install/uninstall is finished (true/false)
         scope: system
-        # If no repo information is specified, Flathub will be used by default
+        repo:
+          url: https://dl.flathub.org/repo/flathub.flatpakrepo
+          name: flathub
+          title: Flathub
         install: # system flatpaks we want all users to have and not remove
-          - org.mozilla.firefox
-          - org.gnome.Loupe
+           - org.gnome.Loupe
+           - org.pulseaudio.pavucontrol
+           - io.mpv.Mpv
+           - io.github.pwr_solaar.solaar
+           - app.zen_browser.zen
       - scope: user # Also add Flathub user repo, but no user packages
+    
+  - type: bling
+    install:
+      - rpmfusion
 
   - type: signing # this sets up the proper policy & signing files for signed images to work fully
